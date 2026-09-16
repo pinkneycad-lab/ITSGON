@@ -63,5 +63,36 @@
     <body>
         <canvas id="emulator_target" width="240px" height="160px"></canvas>
         <span id="tempMessage"></span>
+        <script>
+window.addEventListener("keydown", function(e) {
+    // Press 'S' to Save the game state manually
+    if (e.key.toLowerCase() === "s" && !e.ctrlKey) {
+        e.preventDefault();
+        if (typeof Iodine !== 'undefined' && Iodine.exportSave) {
+            Iodine.exportSave();
+        } else {
+            alert("Save failed: Game core is not ready yet.");
+        }
+    }
+    // Press 'L' to Load your save file back into the canvas
+    if (e.key.toLowerCase() === "l" && !e.ctrlKey) {
+        e.preventDefault();
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.sav';
+        input.onchange = function(event) {
+            let file = event.target.files[0];
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                if (typeof Iodine !== 'undefined' && Iodine.importSave) {
+                    Iodine.importSave(new Uint8Array(e.target.result));
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        };
+        input.click();
+    }
+}, true);
+</script>
     </body>
 </html>
